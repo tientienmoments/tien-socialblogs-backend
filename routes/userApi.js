@@ -62,8 +62,16 @@ router.put("/reset-password",
 
 router.put("/me",
   authMiddleware.loginRequired,
-  userController.getCurrentUser,
   userController.updateProfile
+)
+
+router.get("/me",
+  authMiddleware.loginRequired,
+  userController.getCurrentUser
+)
+router.post("/me/avatar",
+authMiddleware.loginRequired,
+userController.uploadAvatar
 )
 
 

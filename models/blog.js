@@ -9,6 +9,9 @@ const blogSchema = Schema({
     required: true,
     ref: "User",
   },
+  createdAt:{type: Date},
+  updateAt:{type:Date},
+  
   reactions: {
     laugh: { type: Number, default: 0 },
     sad: { type: Number, default: 0 },
@@ -18,7 +21,17 @@ const blogSchema = Schema({
   },
   reviewCount: { type: Number, default: 0 },
   isDeleted: { type: Boolean, default: false },
-});
+  tags:[String],
+
+},
+{
+  timestamps: true
+}
+
+);
+
+
+
 
 blogSchema.plugin(require("./plugins/isDeletedFalse"));
 

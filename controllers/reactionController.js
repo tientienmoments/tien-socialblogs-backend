@@ -1,9 +1,9 @@
-const utilsHelper = require("../helpers/utils.helper");
+const {catchAsync, sendResponse, AppError} = require("../helpers/utils.helper")
 const Reaction = require("../models/reaction");
 const reactionController = {};
 
-reactionController.saveReaction = async (req, res, next) => {
-  try {
+reactionController.saveReaction = catchAsync(async (req, res, next) => {
+  
     const { targetType, target, emoji } = req.body;
     // Find the reaction of the current user
     let reaction = await Reaction.findOne({
@@ -11,9 +11,10 @@ reactionController.saveReaction = async (req, res, next) => {
       target,
       user: req.userId,
     });
+    
     if (!reaction) {
       await Reaction.create({ targetType, target, user: req.userId, emoji });
-      return utilsHelper.sendResponse(
+      return sendResponse(
         res,
         200,
         true,
@@ -24,7 +25,7 @@ reactionController.saveReaction = async (req, res, next) => {
     } else {
       if (reaction.emoji === emoji) {
         await Reaction.findOneAndDelete({ _id: reaction._id });
-        return utilsHelper.sendResponse(
+        return sendResponse(
           res,
           200,
           true,
@@ -34,7 +35,7 @@ reactionController.saveReaction = async (req, res, next) => {
         );
       } else {
         await Reaction.findOneAndUpdate({ _id: reaction._id }, { emoji });
-        return utilsHelper.sendResponse(
+        return sendResponse(
           res,
           200,
           true,
@@ -44,9 +45,7 @@ reactionController.saveReaction = async (req, res, next) => {
         );
       }
     }
-  } catch (error) {
-    next(error);
-  }
-};
+  
+});
 
 module.exports = reactionController;

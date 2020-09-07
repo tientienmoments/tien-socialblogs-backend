@@ -17,5 +17,17 @@ router.post(
     ]),
     authController.loginWithEmail
 );
+// make rout for login facebook
+router.get(
+    "/login/facebook/:token",
+    authController.loginWithFacebook
+    
+)
+
+//make router for login google
+router.get(
+    "/login/google/:token",
+    authController.loginWithGoogle
+)
 
 module.exports = router;

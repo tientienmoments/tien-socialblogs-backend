@@ -1,9 +1,9 @@
-const utilsHelper = require("../helpers/utils.helper")
+const {catchAsync, sendResponse, AppError} = require("../helpers/utils.helper")
 const Review = require("../models/review")
 const reviewController = {}
 
-reviewController.getReview = async (req, res, next) => {
-    try {
+reviewController.getReview = catchAsync(async (req, res, next) => {
+    
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const blogId= req.params.id;
@@ -18,7 +18,7 @@ reviewController.getReview = async (req, res, next) => {
             .skip(offset)           //offset: ????
             .limit(limit);
 
-        return utilsHelper.sendResponse(
+        return sendResponse(
             res,
             200,
             true,
@@ -27,13 +27,11 @@ reviewController.getReview = async (req, res, next) => {
             "Load Reviews sucessfully"
         )
 
-    } catch (error) {
-        next(error)
-    }
-}
+    
+})
 
-reviewController.createReview = async (req, res, next) => {
-    try {
+reviewController.createReview = catchAsync(async (req, res, next) => {
+
         const userId = req.userId;
         const blogId = req.params.id;
         const { content } = req.body;
@@ -44,7 +42,7 @@ reviewController.createReview = async (req, res, next) => {
             content
 
         })
-        return utilsHelper.sendResponse(
+        return sendResponse(
             res,
             200,
             true,       //sucess: true
@@ -53,13 +51,11 @@ reviewController.createReview = async (req, res, next) => {
             "Create new review succesfully"
         )
 
-    } catch (error) {
-        next(error)
-    }
-}
+    
+})
 
-reviewController.updateReview = async (req, res, next) => {
-    try {
+reviewController.updateReview = catchAsync(async (req, res, next) => {
+
         const userId = req.userId;
         const reviewId= req.params.id;
         
@@ -73,7 +69,7 @@ reviewController.updateReview = async (req, res, next) => {
 
         if(!review) return next(new Error("Review not found or user s not author"));
              
-        return utilsHelper.sendResponse(
+        return sendResponse(
             res,
             200,
             true,       //sucess: true
@@ -82,12 +78,10 @@ reviewController.updateReview = async (req, res, next) => {
             "Update Review successfully"
         )
 
-    } catch (error) {
-        next(error)
-    }
-}
-reviewController.deleteReview = async (req, res, next) => {
-    try {
+    
+})
+reviewController.deleteReview = catchAsync(async (req, res, next) => {
+    
         const userId = req.userId;
         const reviewId= req.params.id;
         
@@ -104,7 +98,7 @@ reviewController.deleteReview = async (req, res, next) => {
 
         if(!review) return next(new Error("Review not found or user s not author"));
              
-        return utilsHelper.sendResponse(
+        return sendResponse(
             res,
             200,        
             true,       //sucess: true
@@ -112,10 +106,8 @@ reviewController.deleteReview = async (req, res, next) => {
             null,
             "Delete review successfully"
         )
-    } catch (error) {
-        next(error)
-    }
-}
+
+})
 
 
 

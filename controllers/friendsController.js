@@ -1,9 +1,9 @@
-const utilsHelper = require("../helpers/utils.helper")
+const {catchAsync, sendResponse, AppError} = require("../helpers/utils.helper")
 const Friendship = require("../models/friendship")
 const friendsController = {}
 
-friendsController.sendFriendRequest = async (req, res, next) => {
-    try {
+friendsController.sendFriendRequest = catchAsync(async (req, res, next) => {
+  
       const userId = req.userId; // From
       const toUserId = req.params.id; // To
       let friendship = await Friendship.findOne({ from: userId, to: toUserId });
@@ -13,7 +13,7 @@ friendsController.sendFriendRequest = async (req, res, next) => {
           to: toUserId,
           status: "requesting",
         });
-        return utilsHelper.sendResponse(
+        return sendResponse(
           res,
           200,
           true,
@@ -34,7 +34,7 @@ friendsController.sendFriendRequest = async (req, res, next) => {
           case "cancel":
             friendship.status = "requesting";
             await friendship.save();
-            return utilsHelper.sendResponse(
+            return sendResponse(
               res,
               200,
               true,
@@ -47,14 +47,12 @@ friendsController.sendFriendRequest = async (req, res, next) => {
             break;
         }
       }
-    } catch (error) {
-      next(error);
-    }
-  };
+    
+  });
 
 
-friendsController.acceptFriendRequest = async (req, res, next) => {
-    try {
+friendsController.acceptFriendRequest = catchAsync(async (req, res, next) => {
+    
       const userId = req.userId; // To
       const fromUserId = req.params.id; // From
       let friendship = await Friendship.findOne({
@@ -66,7 +64,7 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
   
       friendship.status = "accepted";
       await friendship.save();
-      return utilsHelper.sendResponse(
+      return sendResponse(
         res,
         200,
         true,
@@ -74,13 +72,11 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
         null,
         "Friend request has been accepted"
       );
-    } catch (error) {
-      next(error);
-    }
-  };
+    
+  });
   
-  friendsController.declineFriendRequest = async (req, res, next) => {
-    try {
+  friendsController.declineFriendRequest = catchAsync(async (req, res, next) => {
+    
       const userId = req.userId; // To
       const fromUserId = req.params.id; // From
       let friendship = await Friendship.findOne({
@@ -92,7 +88,7 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
   
       friendship.status = "decline";
       await friendship.save();
-      return utilsHelper.sendResponse(
+      return sendResponse(
         res,
         200,
         true,
@@ -100,39 +96,33 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
         null,
         "Friend request has been declined"
       );
-    } catch (error) {
-      next(error);
-    }
-  };
+    
+  });
   
-  friendsController.getSentFriendRequestList = async (req, res, next) => {
-    try {
+  friendsController.getSentFriendRequestList = catchAsync(async (req, res, next) => {
+  
       const userId = req.userId;
       const requestList = await Friendship.find({
         from: userId,
         status: "requesting",
       }).populate("to");
       return utilsHelper.sendResponse(res, 200, true, requestList, null, null);
-    } catch (error) {
-      next(error);
-    }
-  };
+    
+  });
   
-  friendsController.getReceivedFriendRequestList = async (req, res, next) => {
-    try {
+  friendsController.getReceivedFriendRequestList = catchAsync(async (req, res, next) => {
+    
       const userId = req.userId;
       const requestList = await Friendship.find({
         to: userId,
         status: "requesting",
       }).populate("from");
-      return utilsHelper.sendResponse(res, 200, true, requestList, null, null);
-    } catch (error) {
-      next(error);
-    }
-  };
+      return sendResponse(res, 200, true, requestList, null, null);
+    
+  });
   
-  friendsController.getFriendList = async (req, res, next) => {
-    try {
+  friendsController.getFriendList = catchAsync(async (req, res, next) => {
+    
       const userId = req.userId;
       let friendList = await Friendship.find({
         $or: [{ from: userId }, { to: userId }],
@@ -150,14 +140,12 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
         }
         return friend;
       });
-      return utilsHelper.sendResponse(res, 200, true, friendList, null, null);
-    } catch (error) {
-      next(error);
-    }
-  };
+      return sendResponse(res, 200, true, friendList, null, null);
+    
+  });
   
-  friendsController.cancelFriendRequest = async (req, res, next) => {
-    try {
+  friendsController.cancelFriendRequest = catchAsync(async (req, res, next) => {
+    
       const userId = req.userId; // From
       const toUserId = req.params.id; // To
       let friendship = await Friendship.findOne({
@@ -169,7 +157,7 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
   
       friendship.status = "cancel";
       await friendship.save();
-      return utilsHelper.sendResponse(
+      return sendResponse(
         res,
         200,
         true,
@@ -177,13 +165,11 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
         null,
         "Friend request has been cancelled"
       );
-    } catch (error) {
-      next(error);
-    }
-  };
+    
+  });
   
-  friendsController.removeFriendship = async (req, res, next) => {
-    try {
+  friendsController.removeFriendship = catchAsync(async (req, res, next) => {
+  
       const userId = req.userId;
       const toBeRemovedUserId = req.params.id;
       let friendship = await Friendship.findOne({
@@ -197,7 +183,7 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
   
       friendship.status = "removed";
       await friendship.save();
-      return utilsHelper.sendResponse(
+      return sendResponse(
         res,
         200,
         true,
@@ -205,10 +191,8 @@ friendsController.acceptFriendRequest = async (req, res, next) => {
         null,
         "Friendship has been removed"
       );
-    } catch (error) {
-      next(error);
-    }
-  };
+    
+  });
 
 
 module.exports = friendsController
