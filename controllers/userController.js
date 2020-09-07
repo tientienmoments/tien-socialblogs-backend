@@ -6,18 +6,13 @@ const jwt = require("jsonwebtoken");
 const Blog = require("../models/blog");
 
 
-userController.register = utilsHelper.catchAsync(async (req, res, next) => {
+userController.register = async (req, res, next) => {
 
 
   let { name, email, password } = req.body;
+  console.log("registering with password+", password, "+")
   let user = await User.findOne({ email });
   if (user) return next(new Error("User already exists"))
-
-  // encrypt password to can not understand by human
-
-  const salt = await bcrypt.genSalt(10);
-  password = await bcrypt.hash(password, salt);
-
 
   user = await User.create({
     name,
@@ -36,8 +31,7 @@ userController.register = utilsHelper.catchAsync(async (req, res, next) => {
     "Create user succesfully"
   )
 
-})
-
+}
 
 userController.getCurrentUser = utilsHelper.catchAsync(async (req, res, next) => {
 

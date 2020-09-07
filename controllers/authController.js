@@ -4,13 +4,16 @@ const bcrypt = require("bcryptjs");
 const axios = require('axios');
 const authController = {}
 
-authController.loginWithEmail = catchAsync(async (req, res, next) => {
+authController.loginWithEmail = async (req, res, next) => {
 
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return next(new Error("Invalid credentials"));
 
+    console.log(user)
+    console.log(password);
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log(isMatch);
     if (!isMatch) return next(new Error("Wrong password"))
     accessToken = await user.generateToken();
     return sendResponse(
@@ -24,7 +27,7 @@ authController.loginWithEmail = catchAsync(async (req, res, next) => {
     )
 
 
-})
+}
 
 authController.loginWithFacebook = catchAsync(async (req, res, next) => {
 
@@ -62,7 +65,7 @@ authController.loginWithGoogle = catchAsync(async (req, res, next) => {
     );
 
     const { email, name, picture } = response.data;
-    console.log("check data google",response.data)
+    console.log("check data google", response.data)
     let user = await User.findOne({ email });
 
     if (!user) {
